@@ -5,10 +5,10 @@ import functools
 import MySQLdb
 
 PAGINACAO = 1000  # 100
-N_PROCESSOS = 24
-N_EXECUTE_MANY = 1000  # 10000                                                                                                                               #no mysql %s no sqlserver
 KEY_QRY_PARAMETRIZADA = "%s"  # "?" para SQL SERVER e "%s" para MySQL
-Q_STR = f"insert into pessoas (cpf,nome,mae,dt_nasc,cidade,estado,bairro,logradouro,complemento,sexo,validado) values " + ", ".join([f"({', '.join([KEY_QRY_PARAMETRIZADA] * 11)})"] * PAGINACAO)
+Q_STR = f"insert into pessoas (cpf,nome,mae,dt_nasc,cidade,estado,bairro,logradouro,complemento,sexo,validado) " \
+        f"values " + ", ".join([f"({', '.join([KEY_QRY_PARAMETRIZADA] * 11)})"] * PAGINACAO)
+
 
 def insere_dados(dados, isql=Q_STR):
     con = MySQLdb.connect("localhost", "root", "sherlock1", "sherlock")
@@ -27,7 +27,7 @@ def executa_funcao(func):
         raise e
 
 
-def popula_tabela(arquivo):
+def popula_tabela(arquivo, n_processos=4, n_execute_many=1000):
     inicio_temp = time.time()
     list_processes = []
     linhas_executemany = []
@@ -42,14 +42,14 @@ def popula_tabela(arquivo):
             if contador == PAGINACAO:
                 linhas_executemany.append(linha_params)
 
-                if len(linhas_executemany) == N_EXECUTE_MANY:
+                if len(linhas_executemany) == n_execute_many:
                     list_processes.append(linhas_executemany)
 
-                    if len(list_processes) == N_PROCESSOS:
+                    if len(list_processes) == n_processos:
                         partial_funs = []
                         for params_p in list_processes:
                             partial_funs.append(functools.partial(insere_dados, params_p))
-                        with multiprocessing.Pool(N_PROCESSOS) as p:
+                        with multiprocessing.Pool(n_processos) as p:
                             p.map(executa_funcao, partial_funs)
                         list_processes = []
 
@@ -79,14 +79,3 @@ def popula_tabela(arquivo):
         [f"({', '.join([KEY_QRY_PARAMETRIZADA] * 11)})"] * params_restantes)
     insere_dados([linha_params], isql_restante)
 
-
-if __name__ == '__main__':
-    print('comecei agora', datetime.datetime.now())
-    iniciogeral = time.time()
-
-    popula_tabela()
-
-    print('acabei agora', datetime.datetime.now())
-
-    fimgeral = time.time()
-    print("tempo de processamento geral: " + str(fimgeral - iniciogeral))
