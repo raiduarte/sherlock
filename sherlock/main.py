@@ -29,7 +29,7 @@ def importa_dados_de_arquivo():
     print('Início do processo', datetime.datetime.now())
     iniciogeral = time.time()
     print(p_arquivo)
-    popula_tabela(p_arquivo, p_n_processos, p_n_execute_many)
+    popula_tabela(p_arquivo, int(p_n_processos), int(p_n_execute_many))
 
     print('processo finalizado', datetime.datetime.now())
 
