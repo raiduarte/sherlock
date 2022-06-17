@@ -1,28 +1,29 @@
-Importação de bases de dados
-#################################################
+# Importação de bases de dados
 
-
-#. Pessoas
 ------------------
 
-*Arquivo*: E:/Desenvolvimento/Delphi/sherlock/base1/base1
+## Pessoas
 
-*Destino*: pessoas_test.pessoas
+- `Arquivo`: E:/Desenvolvimento/Delphi/sherlock/base1/base1
 
-*Tempo de processamento*: 3 horas? (não lembro)
+- `Destino`: pessoas_test.pessoas
 
-*Índices*: cpf; sexo; nome.
+- `Tempo de processamento`: 3 horas? (não lembro)
 
-*Campos*: 
+- `Índices`: cpf; sexo; nome.
 
-|cpf: "00000000353"
-|nome: "PAULO RIBEIRO"
-|mae: "ISELINA COSME RIBEIRO"
-|dt_nasc: "19420803"
-|cidade: "PRAIA GDE"
-|estado: "SP"
-|bairro: "JD SAMAMBAIA"
-|logradouro: R ARAUCARIAS"
-|complemento: "270"
-|sexo: "M"
-|validado: "0"
+- `Campos`: 
+
+  - cpf: "00000000353"
+  - nome: "PAULO RIBEIRO"
+  - mae: "ISELINA COSME RIBEIRO"
+  - dt_nasc: "19420803"
+  - cidade: "PRAIA GDE"
+  - estado: "SP"
+  - bairro: "JD SAMAMBAIA"
+  - logradouro: R ARAUCARIAS"
+  - complemento: "270"
+  - sexo: "M"
+  - validado: "0"
+
+---------------------------------------
