@@ -1,4 +1,4 @@
-from sherlock.importa_dados import popula_tabela
+from sherlock.classes_helper.pessoas import InserirDadosPessoas
 import time
 import datetime
 
@@ -29,7 +29,8 @@ def importa_dados_de_arquivo():
     print('Início do processo', datetime.datetime.now())
     iniciogeral = time.time()
     print(p_arquivo)
-    popula_tabela(p_arquivo, int(p_n_processos), int(p_n_execute_many))
+    isr_dados = InserirDadosPessoas()
+    isr_dados.popula_tabela(p_arquivo, int(p_n_processos), int(p_n_execute_many))
 
     print('processo finalizado', datetime.datetime.now())
 

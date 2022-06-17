@@ -1,81 +1,53 @@
 import datetime
 import time
-import multiprocessing
-import functools
-import MySQLdb
-
-PAGINACAO = 1000  # 100
-KEY_QRY_PARAMETRIZADA = "%s"  # "?" para SQL SERVER e "%s" para MySQL
-Q_STR = f"insert into pessoas (cpf,nome,mae,dt_nasc,cidade,estado,bairro,logradouro,complemento,sexo,validado) " \
-        f"values " + ", ".join([f"({', '.join([KEY_QRY_PARAMETRIZADA] * 11)})"] * PAGINACAO)
+import pymongo
 
 
-def insere_dados(dados, isql=Q_STR):
-    con = MySQLdb.connect("localhost", "root", "sherlock1", "sherlock")
+class InserirDadosDB:
+    PAGINACAO = 1000  # 100
+    KEY_QRY_PARAMETRIZADA = "%s"  # "?" para SQL SERVER e "%s" para MySQL
+    TABELA = ''
+    COLUNAS = None
 
-    cursor = con.cursor()
-    cursor.executemany(isql, dados)
-    cursor.close()
-    con.close()
+    def __init__(self, tabela=None):
+        if tabela is not None:
+            self.TABELA = tabela
 
+    def insere_dados(self, dados):
+        myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+        mydb = myclient["pessoas"]
+        pessoas_colletion = mydb[self.TABELA]
+        pessoas_colletion.insert_many(dados)
 
-def executa_funcao(func):
-    try:
+    def executa_funcao(self, func):
         return func()
-    except Exception as e:
-        print(func)
-        raise e
 
+    def tratamento_linha_to_list(self, linha) -> list:
+        return linha.split('|')
 
-def popula_tabela(arquivo, n_processos=4, n_execute_many=1000):
-    inicio_temp = time.time()
-    list_processes = []
-    linhas_executemany = []
-    linha_params = []
-    contador = 1
-    for i, linha in enumerate(open(arquivo, "r")):
-        if linha != '\n':
-            list_values = [linha[0:11].strip(), linha[11:52].strip(), linha[53:82].strip(), linha[83:91].strip(),
-                          linha[166:184].strip(), linha[184:186].strip(), linha[143:158].strip(), linha[99:124].strip(),
-                          linha[124:143].strip(), linha[186:187].strip(), '0']
-            linha_params += list_values
-            if contador == PAGINACAO:
-                linhas_executemany.append(linha_params)
+    def popula_tabela(self, arquivo):
+        inicio_temp = time.time()
+        linhas_executemany = []
+        contador = 1
+        for i, linha in enumerate(open(arquivo, "r")):
+            if i == 0:
+                self.COLUNAS = self.tratamento_linha_to_list(linha)
 
-                if len(linhas_executemany) == n_execute_many:
-                    list_processes.append(linhas_executemany)
-
-                    if len(list_processes) == n_processos:
-                        partial_funs = []
-                        for params_p in list_processes:
-                            partial_funs.append(functools.partial(insere_dados, params_p))
-                        with multiprocessing.Pool(n_processos) as p:
-                            p.map(executa_funcao, partial_funs)
-                        list_processes = []
-
+            elif linha != '\n':
+                linha_valor = {k: v for k, v in zip(self.COLUNAS, self.tratamento_linha_to_list(linha))}
+                linhas_executemany.append(linha_valor)
+                if contador == self.PAGINACAO:
+                    self.insere_dados(linhas_executemany)
+                    contador = 1
                     linhas_executemany = []
+                else:
+                    contador += 1
 
-                contador = 1
-                linha_params = []
-            else:
-                contador += 1
+            if i % (5 * 10 ** 6) == 0:
+                fim_temp = time.time()
+                print('Fiz até a linha', i, datetime.datetime.now(), 'o último loop foi feito em',
+                      str(fim_temp - inicio_temp))
+                inicio_temp = time.time()
 
-        if i % (5 * 10 ** 6) == 0:
-            fim_temp = time.time()
-            print('Fiz até a linha', i, datetime.datetime.now(), 'o último loop foi feito em', str(fim_temp - inicio_temp))
-            inicio_temp = time.time()
-
-    if linhas_executemany:
-        list_processes.append(linhas_executemany)
-
-    partial_funs = []
-    for params_p in list_processes:
-        partial_funs.append(functools.partial(insere_dados, params_p))
-    with multiprocessing.Pool(len(list_processes)) as p:
-        p.map(executa_funcao, partial_funs)
-
-    params_restantes = int(len(linha_params) / 11)
-    isql_restante = f"insert into pessoas (cpf,nome,mae,dt_nasc,cidade,estado,bairro,logradouro,complemento,sexo,validado) values " + ", ".join(
-        [f"({', '.join([KEY_QRY_PARAMETRIZADA] * 11)})"] * params_restantes)
-    insere_dados([linha_params], isql_restante)
+        self.insere_dados(linhas_executemany)
 
