@@ -109,3 +109,57 @@
   - "ENTRADASOCIEDADE\n": "20010522\n"
   - 
 ---------------------------------------
+
+## Empresas Socio
+
+- `Arquivos DBF dentro da pasta`: E:\Desenvolvimento\Delphi\sherlock\Empresas\Veiculo dez 2017\veiculo dez 2017
+
+- `Destino`: pessoas.veiculos
+
+- `Tempo de processamento`: 52 minutos
+
+- `Número de linhas`: 34.7 milhões
+
+- `Índices`: ...
+
+- `Campos`: 
+ 
+  - "PLACA": " 00AAA0"
+  - "MARCA": "AUDI/A3 1.8"
+  - "RENAVAN": 728890720
+  - "ANOFAB": 1999
+  - "CHASSI": "93UNB48L3X4001217"
+  - "COMBU": "GASOLINA"
+  - "TIPO": 6
+  - "ESPEC": 1
+  - "DAINCL": 20000809
+  - "DALICE": 20150129
+  - "DAMOVI": 20150129
+  - "ANOMODE": 1999
+  - "PROPRI": "JOAO VICTOR VALLE VINHAES"
+  - "END": "R STO ANTONIO"
+  - "NUM": "  611"
+  - "COMPL": "AP 41"
+  - "BAIRRO": "B VISTA"
+  - "CEP": "01314000"
+  - "CPF": "00042257635876"
+  - "CIDADE": "SAO PAULO"
+  - "ESTADO": "SP"
+
+---------------------------------------
+
+## Obitos
+
+- `Arquivos Access dentro da pasta`: E:\Desenvolvimento\Delphi\sherlock\Empresas\Obitos2000a2008\Obitos2000a2008
+
+- `Destino`: pessoas.obitos
+
+- `Tempo de processamento`: XX minutos
+
+- `Número de linhas`: XX.X milhões
+
+- `Índices`: ...
+
+- `Campos`: 
+ 
+---------------------------------------
